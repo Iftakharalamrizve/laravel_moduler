@@ -7,8 +7,15 @@ use Illuminate\Support\Str;
 use File;
 use Route;
 use Artisan;
+use App\Traits\RepositoryPattern;
+use App\Traits\OtherPattern;
+use App\Traits\CommonMethod;
 class codeGenerator extends Command
 {
+    //use Traits
+    use CommonMethod;
+    use RepositoryPattern;
+    use OtherPattern;
     /**
      * The name and signature of the console command.
      *
@@ -28,6 +35,14 @@ class codeGenerator extends Command
      *
      * @return void
      */
+
+    /**
+     * This property get to type value repository pattern or not
+     *
+     * @var boolean
+     */
+     protected $patternType;
+
     public function __construct()
     {
         parent::__construct();
@@ -41,16 +56,21 @@ class codeGenerator extends Command
     public function handle()
     {
         //enter Pattern name
-        $patternName = $this->ask('Enter Module Pattern Name :');
+        $moduleName = $this->ask('Enter Module Pattern Name :');
         //migration and model make if find patternName
-        $migrationModalCreateStatus=isset($patternName)?$this->makeModalMigrationPattern($patternName):false;
+        $migrationModalCreateStatus=isset($moduleName)?$this->makeModalMigrationPattern($moduleName):false;
         //modal and migration status message show
-        $migrationModalCreateStatus?$this->info("Your Migration And Model Create successfully"):$this->error("Sorry Please Try again");
-        //make controller stage
+        $migrationModalCreateStatus?$this->info("Your Migration And Model Create successfully"):$this->warn("Your Modal Migration already Created");
+        //make controller
+        //have 2 type code style 1 repository pattern
+        $this->patternType=$this->choice('You Need Repository Pattern ?', ['Yes', 'No'],1);
 
-
-
-
+        if(!$this->patternType){
+            //if select repository pattern
+            $this->RepositoryPatternGenerate($moduleName);
+        }else{
+            //other general pattern
+        }
 
     }
 
@@ -75,33 +95,4 @@ class codeGenerator extends Command
     }
 
 
-
-
-
-
-
-
-
-    //check FIle exist or not
-    public function checkFileAlreadyCreateOrNot($filePath,$fileName){
-        $path=app_path($filePath.'/'.$fileName.'.php');
-        if(!file_exists($path))
-        {
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-
-
-
-    //folder create or directory create method
-    public function makeFolderOrDirectory($FolderPath){
-        $path=app_path($FolderPath);
-        if(!file_exists( $path))
-        {
-            File::makeDirectory( $path,$mode=0777,true,true);
-        }//end file create option ;
-    }
 }

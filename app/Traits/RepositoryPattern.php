@@ -4,14 +4,10 @@
 namespace App\Traits;
 
 use File;
-use App\Traits\CommonMethod as CommonTrait;
+use Artisan;
+use Illuminate\Support\Str;
 trait RepositoryPattern
 {
-    use CommonTraitr{
-        //alis the commonMethod traits method name
-        CommonTraitr::makeFolderOrDirectory insteadof MakeFolder;
-        CommonTraitr::checkFileAlreadyCreateOrNot as FileStatus;
-    }
 
 
 
@@ -22,8 +18,8 @@ trait RepositoryPattern
      * @var array
      */
     protected $repositoryPattern = [
-        'Interface',
-        'Repository',
+        'Interfaces',
+        'Repositories',
         'Request',
         'Controller',
         'views'
@@ -39,13 +35,14 @@ trait RepositoryPattern
         foreach ($this->repositoryPattern as $key=>$item){
             switch ($key){
                 case 0:
-                    $ModelFolderPath="/Interfaces";
-                    $this->MakeFolder($ModelFolderPath);
+                    $ModelFolderPath="/".$item;
+                    $this->makeFolderOrDirectory($ModelFolderPath);
                     $this->InterfaceGenerator($moduleName);
                     break;
                 case 1:
-                    $ModelFolderPath="/Interface";
-                    $this->MakeFolder($ModelFolderPath);
+                    $ModelFolderPath="/".$item;
+                    $this->makeFolderOrDirectory($ModelFolderPath);
+                    $this->RepositoryGenerator($item,$ModelFolderPath,$moduleName);
                     break;
                 case 2:
                     break;
@@ -60,8 +57,30 @@ trait RepositoryPattern
 		return file_get_contents(app_path('Stubs/' . $type . '/' . $stubName . '.text'));
 	}
 
+
+
+
+
     public function InterfaceGenerator($moduleName){
+
         $interFaceText=$this->getStub("Interface","Interface");
+        $moduleName=Str::singular(ucfirst($moduleName));
+        $interFaceTemplate = str_replace ( [ '{ModuleName}' ] , [ $moduleName ] , $interFaceText );
+        $filePath='/Interfaces/'.$moduleName.'.php';
+        $this->makeFile($filePath);
+        file_put_contents(app_path('/Interfaces/'.$moduleName.'.php'),$interFaceTemplate);
+        $this->info("Your Interface create Successfully");
+    }
+
+
+    public function  RepositoryGenerator($interFacePath,$modulePath,$moduleName){
+        $repositoryText=$this->getStub("Repository","Repository");
+        $moduleName=Str::singular(ucfirst($moduleName));
+        $repositoryTemplate = str_replace ( [ '{ModuleName}','{InterFacePath}' ] , [ $moduleName,app_path($interFacePath)] , $repositoryText );
+        $filePath=$modulePath.'/'.$moduleName.'.php';
+        $this->makeFile($filePath);
+        file_put_contents(app_path('/Interfaces/'.$moduleName.'.php'),$repositoryTemplate);
+        $this->info("Your Repository create Successfully");
     }
 
 

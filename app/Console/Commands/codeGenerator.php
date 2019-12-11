@@ -7,14 +7,15 @@ use Illuminate\Support\Str;
 use File;
 use Route;
 use Artisan;
-use App\Traits\RepositoryPattern;
+
 use App\Traits\OtherPattern;
 use App\Traits\CommonMethod;
+use App\Traits\RepositoryPattern;
 class codeGenerator extends Command
 {
     //use Traits
-    use CommonMethod;
     use RepositoryPattern;
+
     use OtherPattern;
     /**
      * The name and signature of the console command.
@@ -64,8 +65,7 @@ class codeGenerator extends Command
         //make controller
         //have 2 type code style 1 repository pattern
         $this->patternType=$this->choice('You Need Repository Pattern ?', ['Yes', 'No'],1);
-
-        if(!$this->patternType){
+        if($this->patternType=="Yes"){
             //if select repository pattern
             $this->RepositoryPatternGenerate($moduleName);
         }else{
@@ -94,5 +94,37 @@ class codeGenerator extends Command
 
     }
 
+
+    //check FIle exist or not
+    public function checkFileAlreadyCreateOrNot($filePath,$fileName){
+        $path=app_path($filePath.'/'.$fileName.'.php');
+        if(!file_exists($path))
+        {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+
+
+    //folder create or directory create method
+    public function makeFolderOrDirectory($FolderPath){
+        $path=app_path($FolderPath);
+        if(!file_exists( $path))
+        {
+            File::makeDirectory( $path,$mode=0777,true,true);
+        }//end file create option ;
+    }
+
+    public function makeFile($FolderPath){
+        $path=app_path($FolderPath);
+        if(!file_exists( $path))
+        {
+//            fopen($path,$mode=0777,true,true);
+            fopen($path,'w');
+        }//end file create option ;
+    }
 
 }

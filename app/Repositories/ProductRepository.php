@@ -1,8 +1,8 @@
 <?php namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
-use {InterFacePath}\{ModuleName}Interface;
-class {ModuleName} implements {ModuleName}Interface
+use App\Interfaces\RepositoryInterface;
+class ProductRepository implements RepositoryInterface
 {
     // model property on class instances
     protected $model;

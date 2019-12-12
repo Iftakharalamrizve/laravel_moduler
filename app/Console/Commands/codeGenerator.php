@@ -64,7 +64,7 @@ class codeGenerator extends Command
         $migrationModalCreateStatus?$this->info("Your Migration And Model Create successfully"):$this->warn("Your Modal Migration already Created");
         //make controller
         //have 2 type code style 1 repository pattern
-        $this->patternType=$this->choice('You Need Repository Pattern ?', ['Yes', 'No'],1);
+        $this->patternType=$this->choice('You Need Repositories Pattern ?', ['Yes', 'No'],1);
         if($this->patternType=="Yes"){
             //if select repository pattern
             $this->RepositoryPatternGenerate($moduleName);
